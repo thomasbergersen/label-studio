@@ -14,15 +14,12 @@ Label Studio stores your annotations in a raw JSON format in the SQLite database
 Image annotations exported in JSON format use percentages of overall image size, not pixels, to describe the size and location of the bounding boxes. For more information, see [how to convert the image annotation units](#Units-of-image-annotations).
 
 
-
-
 ## Export data from Label Studio
 
 Export your completed annotations from Label Studio. 
 
 !!! note
     Some export formats export only the annotations and not the data from the task. For more information, see the [export formats supported by Label Studio](#Export-formats-supported-by-Label-Studio).
-
 
 ### Export using the UI in Community edition of Label Studio
 
@@ -36,11 +33,43 @@ Use the following steps to export data and annotations from the Label Studio UI.
     1. The export will always include the annotated tasks, regardless of filters set on the tab. 
     2. Cancelled annotated tasks will be included in the exported result too.
     3. If you want to apply tab filters to the export, try to use [export snapshots using the SDK](https://labelstud.io/sdk/project.html#label_studio_sdk.project.Project.export_snapshot_create) or [API](#Export-snapshots-using-the-API).
+
     4. If the export times out, see how to [export snapshots using the SDK](https://labelstud.io/sdk/project.html#label_studio_sdk.project.Project.export_snapshot_create) or [API](#Export-snapshots-using-the-API).
+
+### Export timeout in Community Edition
+
+If the export times out, see how to [export snapshots using the SDK](https://labelstud.io/sdk/project.html#label_studio_sdk.project.Project.export_snapshot_create) or [API](#Export-snapshots-using-the-API). You can also use a [console command](#Export-using-console-command) to export your project. For more information, see the following section.
+
+### Export using console command
+
+Use the following command to export data and annotations.
+
+```shell
+label-studio export <project-id> <export-format> --path=<output-path>
+```
+
+To enable logs: 
+```shell
+DEBUG=1 LOG_LEVEL=DEBUG label-studio export <project-id> <export-format> --path=<output-path>
+```
+
+### Export all tasks including tasks without annotations
+
+Label Studio open source exports tasks with annotations only by default. If you want to easily export all tasks including tasks without annotations, you can call  the [Easy Export API](https://api.labelstud.io/#operation/api_projects_export_read) with query param `download_all_tasks=true`. For example:
+```
+curl -X GET https://localhost:8080/api/projects/{id}/export?exportType=JSON&download_all_tasks=true
+``` 
+
+If your project is large, you can use a [snapshot export](https://api.labelstud.io/#operation/api_projects_exports_create) (or [snapshot SDK](https://labelstud.io/sdk/project.html#create-new-export-snapshot)) to avoid timeouts in most cases. Snapshots include all tasks without annotations by default.
+
 
 ### <i class='ent'></i> Export snapshots using the UI
 
+<img src="/images/lse-export-snapshots-ui.png" alt="" class="gif-border" />
+<br>
+
 In Label Studio Enterprise, create a snapshot of your data and annotations. Create a snapshot to export exactly what you want from your data labeling project. This delayed export method makes it easier to export large labeling projects from the Label Studio UI.  
+
 
 1. Within a project in the Label Studio UI, click **Export**.
 2. Click **Create New Snapshot**.
